@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milo Events Support Request Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            gap: 20px;
+        }
+
+        h1 {
+            color: #2d3748;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            white-space: nowrap;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        /* NEW: Internal App / Requirements Overview */
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin: 20px 0 30px 0;
+        }
+
+        .panel {
+            background: #f7fafc;
+            border-radius: 14px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .panel h2 {
+            font-size: 1.2rem;
+            color: #2d3748;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel p {
+            color: #4a5568;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .chip {
+            font-size: 0.85rem;
+            padding: 8px 10px;
+            border-radius: 999px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #4a5568;
+        }
+
+        .req-list {
+            display: grid;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .req-item {
+            background: white;
+            border-radius: 12px;
+            padding: 12px 12px;
+            border: 1px solid #e2e8f0;
+            display: grid;
+            gap: 6px;
+        }
+
+        .req-title {
+            font-weight: 700;
+            color: #2d3748;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .req-desc {
+            color: #4a5568;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 999px;
+            border: 1px solid #e2e8f0;
+            background: #f7fafc;
+            color: #4a5568;
+            white-space: nowrap;
+        }
+
+        .milestones {
+            display: grid;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .milestone {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .milestone strong {
+            color: #2d3748;
+        }
+
+        .milestone span {
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        /* Board */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .column {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 500px;
+        }
+
+        .column-header {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            color: white;
+        }
+
+        .column:nth-child(1) .column-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .column:nth-child(2) .column-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .column:nth-child(3) .column-header {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .column:nth-child(4) .column-header {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+        }
+
+        .cards-container {
+            min-height: 400px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            cursor: move;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid #667eea;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card.dragging {
+            opacity: 0.5;
+        }
+
+        .card-type {
+            font-size: 0.85rem;
+            color: #667eea;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .card-requester {
+            font-size: 0.95rem;
+            color: #718096;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card-requester::before {
+            content: "👤";
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #fc8181;
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, transform 0.2s;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .delete-btn:hover {
+            background: #f56565;
+            transform: scale(1.1);
+        }
+
+        .delete-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 520px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            transition: border-color 0.2s;
+            background: white;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .hint {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-top: 6px;
+            line-height: 1.35;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 22px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-cancel {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-cancel:hover {
+            background: #cbd5e0;
+        }
+
+        .drag-over {
+            background: #e6f0ff;
+            border: 2px dashed #667eea;
+        }
+
+        @media (max-width: 1024px) {
+            .board {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .meta-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .board {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Milo Events Support Request</h1>
+            <button class="submit-btn" onclick="openModal()">+ Submit New Request</button>
+        </div>
+
+        <!-- NEW: Internal App / Requirements Overview -->
+        <div class="meta-grid">
+            <div class="panel">
+                <h2>🔐 Platform & Security</h2>
+                <p>
+                    This dashboard is intended to evolve into an <strong>internally hosted application</strong> with standard
+                    authentication and security posture.
+                </p>
+
+                <div class="chips">
+                    <div class="chip"><strong>Hosting:</strong> Internal</div>
+                    <div class="chip"><strong>Auth:</strong> OKTA SSO</div>
+                    <div class="chip"><strong>Security Review:</strong> Likely Required</div>
+                </div>
+
+                <div class="req-list" style="margin-top:16px;">
+                    <div class="req-item">
+                        <div class="req-title">Internal Hosting of the Application <span class="badge">Platform</span></div>
+                        <div class="req-desc">Deploy and operate the app in an internal environment with monitored uptime and access controls.</div>
+                    </div>
+
+                    <div class="req-item">
+                        <div class="req-title">Authentication (OKTA) <span class="badge">Security</span></div>
+                        <div class="req-desc">Use OKTA SSO for sign-in and gate features with roles (e.g., Admin, Triage, Viewer).</div>
+                    </div>
+
+                    <div class="req-item">
+                        <div class="req-title">Security Review <span class="badge">Compliance</span></div>
+                        <div class="req-desc">Complete internal security review before broader rollout; track findings and remediation.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>🧩 Application Requirements</h2>
+                <p>Enhancements needed to move from “local-only board” to a real issue intake system.</p>
+
+                <div class="req-list">
+                    <div class="req-item">
+                        <div class="req-title">Store Issues in a Database <span class="badge">Core</span></div>
+                        <div class="req-desc">Persist issues beyond localStorage so the team has a shared source of truth.</div>
+                    </div>
+
+                    <div class="req-item">
+                        <div class="req-title">People API Reporter Picker <span class="badge">Integration</span></div>
+                        <div class="req-desc">Integrate a people directory API to select the reporter (typeahead, Jira-like).</div>
+                    </div>
+
+                    <div class="req-item">
+                        <div class="req-title">Image Upload Support <span class="badge">UX</span></div>
+                        <div class="req-desc">Allow attaching screenshots/images to issues for faster triage and debugging context.</div>
+                    </div>
+                </div>
+
+                <div class="milestones">
+                    <div class="milestone"><strong>M1:</strong> <span>OKTA + internal hosting baseline</span></div>
+                    <div class="milestone"><strong>M2:</strong> <span>DB-backed issue creation + shared visibility</span></div>
+                    <div class="milestone"><strong>M3:</strong> <span>People API reporter picker + attachments</span></div>
+                    <div class="milestone"><strong>M4:</strong> <span>Security review complete + hardening</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="board">
+            <div class="column">
+                <div class="column-header">New Request</div>
+                <div class="cards-container" data-column="new-request"></div>
+            </div>
+
+            <div class="column">
+                <div class="column-header">In Progress</div>
+                <div class="cards-container" data-column="in-progress"></div>
+            </div>
+
+            <div class="column">
+                <div class="column-header">With Engineering</div>
+                <div class="cards-container" data-column="with-engineering"></div>
+            </div>
+
+            <div class="column">
+                <div class="column-header">Done</div>
+                <div class="cards-container" data-column="done"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="requestModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Submit New Request</div>
+            <form id="requestForm">
+                <div class="form-group">
+                    <label for="requestType">Request Type</label>
+                    <input type="text" id="requestType" name="requestType" required placeholder="e.g., Bug Fix, Feature Request, Support">
+                </div>
+
+                <div class="form-group">
+                    <label for="requestTitle">Title</label>
+                    <input type="text" id="requestTitle" name="requestTitle" required placeholder="Enter request title">
+                </div>
+
+                <!-- NEW: Reporter selection (placeholder for People API integration) -->
+                <div class="form-group">
+                    <label for="reporter">Reporter (People API)</label>
+                    <input type="text" id="reporter" name="reporter" required placeholder="Type to search (e.g., Jane Doe)">
+                    <div class="hint">Currently a text field. Intended: integrate People API for directory-backed typeahead selection.</div>
+                </div>
+
+                <!-- Kept for backwards compatibility (optional) -->
+                <div class="form-group">
+                    <label for="requester">Requester (Legacy)</label>
+                    <input type="text" id="requester" name="requester" placeholder="Optional: legacy field (can be removed)">
+                    <div class="hint">Use “Reporter” above going forward.</div>
+                </div>
+
+                <!-- NEW: Image upload (local demo; persists file name only) -->
+                <div class="form-group">
+                    <label for="attachment">Image Upload (screenshot)</label>
+                    <input type="file" id="attachment" name="attachment" accept="image/*">
+                    <div class="hint">Currently stores file name only. Intended: upload to storage + link to issue record in DB.</div>
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize data from localStorage
+        let requests = JSON.parse(localStorage.getItem('miloRequests')) || [];
+
+        // Open and close modal functions
+        function openModal() {
+            document.getElementById('requestModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('requestModal').classList.remove('active');
+            document.getElementById('requestForm').reset();
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('requestModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('requestForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const requestType = document.getElementById('requestType').value.trim();
+            const requestTitle = document.getElementById('requestTitle').value.trim();
+            const reporter = document.getElementById('reporter').value.trim();
+            const requesterLegacy = document.getElementById('requester').value.trim();
+
+            const attachmentInput = document.getElementById('attachment');
+            const attachmentName = attachmentInput.files && attachmentInput.files[0] ? attachmentInput.files[0].name : "";
+
+            const newRequest = {
+                id: Date.now().toString(),
+                type: requestType,
+                title: requestTitle,
+                reporter: reporter || requesterLegacy || "Unknown",
+                requesterLegacy: requesterLegacy || "",
+                attachmentName: attachmentName,
+
+                // Future-facing flags reflecting the requirements
+                auth: "OKTA",
+                hosting: "Internal",
+                securityReview: "Likely",
+
+                column: 'new-request'
+            };
+
+            requests.push(newRequest);
+            saveRequests();
+            renderBoard();
+            closeModal();
+        });
+
+        // Create card element
+        function createCard(request) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.draggable = true;
+            card.dataset.id = request.id;
+
+            const displayRequester = request.reporter || request.requester || "Unknown";
+
+            const attachmentLine = request.attachmentName
+                ? `<div class="card-requester" style="margin-top:8px;"><span style="margin-right:6px;">🖼️</span>${escapeHtml(request.attachmentName)}</div>`
+                : '';
+
+            const platformLine =
+                `<div class="card-requester" style="margin-top:8px;"><span style="margin-right:6px;">🔐</span>` +
+                `${escapeHtml(request.hosting || "Internal")} • ${escapeHtml(request.auth || "OKTA")} • ${escapeHtml(request.securityReview || "Security Review")}</div>`;
+
+            // We reuse card-requester styles, but override the ::before emoji by adding our own emoji span
+            card.innerHTML = `
+                <button class="delete-btn" onclick="deleteRequest('${request.id}')" title="Delete request">×</button>
+                <div class="card-type">${escapeHtml(request.type)}</div>
+                <div class="card-title">${escapeHtml(request.title)}</div>
+                <div class="card-requester">${escapeHtml(displayRequester)}</div>
+                ${attachmentLine}
+                ${platformLine}
+            `;
+
+            // Drag event listeners
+            card.addEventListener('dragstart', handleDragStart);
+            card.addEventListener('dragend', handleDragEnd);
+
+            return card;
+        }
+
+        // Render the board
+        function renderBoard() {
+            // Clear all columns
+            document.querySelectorAll('.cards-container').forEach(container => {
+                container.innerHTML = '';
+            });
+
+            // Add cards to appropriate columns
+            requests.forEach(request => {
+                const container = document.querySelector(`[data-column="${request.column}"]`);
+                if (container) {
+                    container.appendChild(createCard(request));
+                }
+            });
+        }
+
+        // Drag and drop handlers
+        let draggedElement = null;
+
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            this.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) e.stopPropagation();
+
+            this.classList.remove('drag-over');
+
+            if (draggedElement) {
+                const requestId = draggedElement.dataset.id;
+                const newColumn = this.dataset.column;
+
+                const request = requests.find(r => r.id === requestId);
+                if (request) {
+                    request.column = newColumn;
+                    saveRequests();
+                    renderBoard();
+                }
+            }
+
+            return false;
+        }
+
+        // Setup drag and drop for containers
+        document.querySelectorAll('.cards-container').forEach(container => {
+            container.addEventListener('dragover', handleDragOver);
+            container.addEventListener('dragenter', handleDragEnter);
+            container.addEventListener('dragleave', handleDragLeave);
+            container.addEventListener('drop', handleDrop);
+        });
+
+        // Delete request function
+        function deleteRequest(requestId) {
+            if (confirm('Are you sure you want to delete this request?')) {
+                requests = requests.filter(r => r.id !== requestId);
+                saveRequests();
+                renderBoard();
+            }
+        }
+
+        // Save requests to localStorage
+        function saveRequests() {
+            localStorage.setItem('miloRequests', JSON.stringify(requests));
+        }
+
+        // Basic HTML escape to prevent injection when rendering user-entered text
+        function escapeHtml(str) {
+            return String(str)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
+        }
+
+        // Initial render
+        renderBoard();
+    </script>
+</body>
+</html>
